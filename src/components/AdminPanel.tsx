@@ -17,7 +17,7 @@ interface AdminPanelProps {
 }
 
 function formatDate(iso: string): string {
-  return format(parseISO(iso), 'dd MMM yyyy, HH:mm', { locale: pl });
+  return format(parseISO(iso), 'dd.MM.yyyy HH:mm', { locale: pl });
 }
 
 export default function AdminPanel({
@@ -175,7 +175,9 @@ export default function AdminPanel({
                       <Clock className="w-3 h-3 inline" /> {formatDate(r.endAt)}
                     </p>
                     {isOverdue && (
-                      <span className="text-xs text-red-400 font-medium">Spóźniony!</span>
+                      <span className="text-xs bg-red-500/20 px-2 py-0.5 rounded border border-red-500/30 text-red-400 font-bold tracking-wide">
+                        BRAK ZWROTU W TERMINIE!
+                      </span>
                     )}
                   </div>
                 </div>

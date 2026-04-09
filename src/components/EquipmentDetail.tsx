@@ -2,23 +2,24 @@
 
 import { format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import { CalendarCheck, Clock, Info } from 'lucide-react';
-import type { EquipmentGroup, Reservation, CreateReservationInput } from '@/types/schema';
+import { CalendarCheck, Clock, Info, User } from 'lucide-react';
+import type { EquipmentGroup, Reservation, CreateReservationInput, User as UserType } from '@/types/schema';
 import ReservationForm from './ReservationForm';
 
 interface EquipmentDetailProps {
   group: EquipmentGroup;
   reservations: Reservation[];
+  users: UserType[];
   userId: string;
   isOverdue: boolean;
   onReserve: (input: CreateReservationInput) => Promise<{ success: boolean; error?: string }>;
 }
 
 function formatDate(iso: string): string {
-  return format(parseISO(iso), 'dd MMM yyyy, HH:mm', { locale: pl });
+  return format(parseISO(iso), 'dd.MM.yyyy HH:mm', { locale: pl });
 }
 
-export default function EquipmentDetail({ group, reservations, userId, isOverdue, onReserve }: EquipmentDetailProps) {
+export default function EquipmentDetail({ group, reservations, users, userId, isOverdue, onReserve }: EquipmentDetailProps) {
   const now = new Date();
 
   // Get all reservations for this equipment group
@@ -105,26 +106,35 @@ export default function EquipmentDetail({ group, reservations, userId, isOverdue
             Nadchodzące rezerwacje ({upcomingReservations.length})
           </h3>
           <div className="space-y-2">
-            {upcomingReservations.map((r) => (
-              <div
-                key={r.id}
-                className="bg-slate-800/30 border border-slate-700/40 rounded-lg px-4 py-2.5 flex items-center justify-between"
-              >
-                <span className="text-sm text-slate-300">
-                  {formatDate(r.startAt)}
-                </span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  r.status === 'pending'
-                    ? 'bg-yellow-500/15 text-yellow-300'
-                    : 'bg-emerald-500/15 text-emerald-300'
-                }`}>
-                  {r.status === 'pending' ? 'Oczekuje' : 'Potwierdzona'}
-                </span>
-                <span className="text-sm text-slate-300">
-                  {formatDate(r.endAt)}
-                </span>
-              </div>
-            ))}
+            {upcomingReservations.map((r) => {
+              const u = users.find((user) => user.id === r.userId);
+              return (
+                <div
+                  key={r.id}
+                  className="bg-slate-800/30 border border-slate-700/40 rounded-lg p-3"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-slate-300 font-medium flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-slate-500" />
+                      {u ? u.name : 'Nieznany'} {r.userId === userId && <span className="text-[10px] text-blue-400 font-normal border border-blue-400/30 bg-blue-400/10 px-1 rounded">Ty</span>}
+                    </span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      r.status === 'pending'
+                        ? 'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30'
+                        : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                    }`}>
+                      {r.status === 'pending' ? 'Oczekuje' : 'Potwierdzona'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{formatDate(r.startAt)}</span>
+                    <span className="text-slate-600">→</span>
+                    <span>{formatDate(r.endAt)}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

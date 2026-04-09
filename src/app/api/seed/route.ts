@@ -4,14 +4,26 @@ import { buildSeedEquipment, buildSeedUsers } from '@/lib/seed-data';
 
 export async function POST() {
   const db = readDb();
+  const needsUsersSeed = !Array.isArray(db.users) || db.users.length === 0;
+  const needsEquipmentSeed = !Array.isArray(db.equipment) || db.equipment.length === 0;
+  const needsReservationsInit = !Array.isArray(db.reservations);
 
-  if (db.equipment.length > 0) {
+  if (!needsUsersSeed && !needsEquipmentSeed && !needsReservationsInit) {
     return NextResponse.json({ seeded: false, message: 'Dane już istnieją.' });
   }
 
-  db.users = buildSeedUsers();
-  db.equipment = buildSeedEquipment();
-  db.reservations = [];
+  if (needsUsersSeed) {
+    db.users = buildSeedUsers();
+  }
+
+  if (needsEquipmentSeed) {
+    db.equipment = buildSeedEquipment();
+  }
+
+  if (needsReservationsInit) {
+    db.reservations = [];
+  }
+
   writeDb(db);
 
   return NextResponse.json({

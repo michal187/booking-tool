@@ -64,6 +64,15 @@ export default function HomePage() {
       )
     : false;
 
+  const returnDueSoon = currentUser
+    ? reservations.find((r) => {
+        if (r.userId !== currentUser.id || r.status !== 'confirmed' || r.isReturned) return false;
+        const end = parseISO(r.endAt);
+        const minsLeft = (end.getTime() - now.getTime()) / 60000;
+        return minsLeft > 0 && minsLeft <= 30;
+      })
+    : null;
+
   async function handleLogin(login: string, password: string): Promise<{ success: boolean; error?: string }> {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
@@ -195,6 +204,23 @@ export default function HomePage() {
             </div>
           )}
 
+          {/* 30 mins remaining popup banner */}
+          {returnDueSoon && (
+            <div className="px-6 pt-4">
+              <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-xl p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex flex-col items-center justify-center shrink-0">
+                  <span className="text-xl">⏱️</span>
+                </div>
+                <div>
+                  <h3 className="text-yellow-300 font-bold text-sm">Przypomnienie o zwrocie</h3>
+                  <p className="text-yellow-200/80 text-xs mt-0.5">
+                    Twój czas rezerwacji sprzętu dobiega końca. Masz mniej niż 30 minut na zwrot!
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex-1 flex overflow-hidden">
             {/* Left panel — equipment list */}
             <aside className="w-80 bg-slate-900/60 border-r border-slate-700/50 flex flex-col shrink-0">
@@ -225,6 +251,7 @@ export default function HomePage() {
                   <EquipmentDetail
                     group={selectedGroup}
                     reservations={reservations}
+                    users={users}
                     userId={currentUser.id}
                     isOverdue={isOverdue}
                     onReserve={handleReserve}

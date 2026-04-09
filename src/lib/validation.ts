@@ -1,12 +1,21 @@
 import { differenceInMinutes, differenceInDays, parseISO } from 'date-fns';
 import type { CreateReservationInput, Reservation, ValidationResult } from '@/types/schema';
 
+function getReservationStatus(r: Reservation): Reservation['status'] {
+  return r.status ?? 'confirmed';
+}
+
+function isReservationReturned(r: Reservation): boolean {
+  return r.isReturned ?? false;
+}
+
 /**
  * Check if a reservation overlaps with the given time window.
  * Only considers reservations that are pending/confirmed AND not yet returned.
  */
 function isBlockingReservation(r: Reservation): boolean {
-  return (r.status === 'pending' || r.status === 'confirmed') && !r.isReturned;
+  const status = getReservationStatus(r);
+  return (status === 'pending' || status === 'confirmed') && !isReservationReturned(r);
 }
 
 export function validateReservation(
@@ -21,11 +30,7 @@ export function validateReservation(
     return { ok: false, reason: 'Data rozpoczęcia musi być przed datą zakończenia.' };
   }
 
-  // Duration check — min 15 min
-  const minutes = differenceInMinutes(end, start);
-  if (minutes < 15) {
-    return { ok: false, reason: 'Minimalny czas rezerwacji to 15 minut.' };
-  }
+
 
   // Duration check — max 7 days
   const days = differenceInDays(end, start);
@@ -54,6 +59,15 @@ export function validateReservation(
   return { ok: true };
 }
 
+export function isSlotAvailable(
+  equipmentId: string,
+  startAt: string,
+  endAt: string,
+  existingReservations: Reservation[]
+): boolean {
+  return validateReservation({ equipmentId, startAt, endAt }, existingReservations).ok;
+}
+
 /**
  * Returns true if the user has overdue (unreturned) equipment past the end date.
  * Such a user should be blocked from making new reservations.
@@ -63,8 +77,8 @@ export function hasOverdueItems(userId: string, reservations: Reservation[]): bo
   return reservations.some(
     (r) =>
       r.userId === userId &&
-      r.status === 'confirmed' &&
-      !r.isReturned &&
+      getReservationStatus(r) === 'confirmed' &&
+      !isReservationReturned(r) &&
       parseISO(r.endAt) < now
   );
 }
@@ -122,8 +136,9 @@ export function countAvailableUnits(
     const isUnreturned = reservations.some(
       (r) =>
         r.equipmentId === candidate.id &&
-        r.status === 'confirmed' &&
-        !r.isReturned
+        getReservationStatus(r) === 'confirmed' &&
+        !isReservationReturned(r) &&
+        parseISO(r.endAt) < now
     );
     if (isOccupied || isUnreturned) {
       occupied++;

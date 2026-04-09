@@ -8,7 +8,7 @@ describe('ReservationForm', () => {
     const expectedStartAt = new Date('2026-04-10T08:00').toISOString();
     const expectedEndAt = new Date('2026-04-10T09:00').toISOString();
 
-    render(<ReservationForm equipmentId="eq-001" onSubmit={onSubmit} />);
+    render(<ReservationForm equipmentName="Vector VN1600" userId="user-001" onSubmit={onSubmit} />);
 
     fireEvent.change(screen.getByLabelText('Od'), {
       target: { value: '2026-04-10T08:00' },
@@ -16,11 +16,12 @@ describe('ReservationForm', () => {
     fireEvent.change(screen.getByLabelText('Do'), {
       target: { value: '2026-04-10T09:00' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /zarezerwuj/i }));
+    fireEvent.click(screen.getByRole('button', { name: /złóż rezerwację/i }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(onSubmit).toHaveBeenCalledWith({
-      equipmentId: 'eq-001',
+      equipmentName: 'Vector VN1600',
+      userId: 'user-001',
       startAt: expectedStartAt,
       endAt: expectedEndAt,
     });
@@ -34,7 +35,7 @@ describe('ReservationForm', () => {
       error: 'Konflikt z istniejącą rezerwacją.',
     });
 
-    render(<ReservationForm equipmentId="eq-001" onSubmit={onSubmit} />);
+    render(<ReservationForm equipmentName="Vector VN1600" userId="user-001" onSubmit={onSubmit} />);
 
     fireEvent.change(screen.getByLabelText('Od'), {
       target: { value: '2026-04-10T08:00' },
@@ -42,7 +43,7 @@ describe('ReservationForm', () => {
     fireEvent.change(screen.getByLabelText('Do'), {
       target: { value: '2026-04-10T09:00' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /zarezerwuj/i }));
+    fireEvent.click(screen.getByRole('button', { name: /złóż rezerwację/i }));
 
     expect(await screen.findByText('Konflikt z istniejącą rezerwacją.')).toBeInTheDocument();
   });

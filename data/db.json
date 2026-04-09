@@ -377,6 +377,46 @@
       "status": "confirmed",
       "isReturned": false,
       "createdAt": "2026-04-09T15:27:30.705Z"
+    },
+    {
+      "id": "res-1775748849560-tbcdd",
+      "equipmentId": "eq-010",
+      "userId": "user-003",
+      "startAt": "2026-04-09T15:33:00.000Z",
+      "endAt": "2026-04-09T16:33:00.000Z",
+      "status": "confirmed",
+      "isReturned": false,
+      "createdAt": "2026-04-09T15:34:09.560Z"
+    },
+    {
+      "id": "res-1775749487566-52e70",
+      "equipmentId": "eq-011",
+      "userId": "user-002",
+      "startAt": "2026-04-09T15:44:00.000Z",
+      "endAt": "2026-04-09T16:44:00.000Z",
+      "status": "pending",
+      "isReturned": false,
+      "createdAt": "2026-04-09T15:44:47.566Z"
+    },
+    {
+      "id": "res-1775749501697-37y8g",
+      "equipmentId": "eq-010",
+      "userId": "user-002",
+      "startAt": "2026-04-09T16:44:00.000Z",
+      "endAt": "2026-04-09T17:44:00.000Z",
+      "status": "pending",
+      "isReturned": false,
+      "createdAt": "2026-04-09T15:45:01.697Z"
+    },
+    {
+      "id": "res-1775749529867-n5xih",
+      "equipmentId": "eq-012",
+      "userId": "user-003",
+      "startAt": "2026-04-09T15:45:00.000Z",
+      "endAt": "2026-04-09T19:45:00.000Z",
+      "status": "pending",
+      "isReturned": false,
+      "createdAt": "2026-04-09T15:45:29.867Z"
     }
   ]
 }

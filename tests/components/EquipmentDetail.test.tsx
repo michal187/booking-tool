@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import EquipmentDetail from '@/components/EquipmentDetail';
-import type { Equipment, Reservation } from '@/types/schema';
+import type { EquipmentGroup, Reservation } from '@/types/schema';
 
 describe('EquipmentDetail', () => {
   beforeEach(() => {
@@ -14,55 +14,86 @@ describe('EquipmentDetail', () => {
   });
 
   it('shows active and upcoming reservations for the selected equipment', () => {
-    const equipment: Equipment = {
-      id: 'eq-001',
+    const group: EquipmentGroup = {
       name: 'Vector VN1600',
-      status: 'available',
-      createdAt: '2026-04-09T00:00:00.000Z',
+      total: 2,
+      available: 1,
+      items: [
+        {
+          id: 'eq-001',
+          name: 'Vector VN1600',
+          status: 'available',
+          createdAt: '2026-04-09T00:00:00.000Z',
+        },
+        {
+          id: 'eq-002',
+          name: 'Vector VN1600',
+          status: 'available',
+          createdAt: '2026-04-09T00:00:00.000Z',
+        },
+      ],
     };
     const reservations: Reservation[] = [
       {
         id: 'res-active',
         equipmentId: 'eq-001',
+        userId: 'user-001',
         startAt: '2026-04-10T08:00:00.000Z',
         endAt: '2026-04-10T09:00:00.000Z',
+        status: 'confirmed',
+        isReturned: false,
         createdAt: '2026-04-09T00:00:00.000Z',
       },
       {
         id: 'res-upcoming',
-        equipmentId: 'eq-001',
+        equipmentId: 'eq-002',
+        userId: 'user-002',
         startAt: '2026-04-10T11:00:00.000Z',
         endAt: '2026-04-10T12:00:00.000Z',
+        status: 'pending',
+        isReturned: false,
         createdAt: '2026-04-09T00:00:00.000Z',
       },
     ];
 
     render(
       <EquipmentDetail
-        equipment={equipment}
+        group={group}
         reservations={reservations}
+        userId="user-001"
+        isOverdue={false}
         onReserve={vi.fn()}
       />
     );
 
-    expect(screen.getByText('Aktualnie wypożyczony')).toBeInTheDocument();
+    expect(screen.getByText('Dostępny do rezerwacji')).toBeInTheDocument();
     expect(screen.getByText(/Nadchodzące rezerwacje \(1\)/)).toBeInTheDocument();
   });
 
-  it('explains that blocked equipment can still be reserved', () => {
+  it('disables reservations when no units are currently available', () => {
     render(
       <EquipmentDetail
-        equipment={{
-          id: 'eq-003',
+        group={{
           name: 'Adaptery OBD-II',
-          status: 'blocked',
-          createdAt: '2026-04-09T00:00:00.000Z',
+          total: 1,
+          available: 0,
+          items: [
+            {
+              id: 'eq-003',
+              name: 'Adaptery OBD-II',
+              status: 'blocked',
+              createdAt: '2026-04-09T00:00:00.000Z',
+            },
+          ],
         }}
         reservations={[]}
+        userId="user-001"
+        isOverdue={false}
         onReserve={vi.fn()}
       />
     );
 
-    expect(screen.getByText(/nadal można go zarezerwować/i)).toBeInTheDocument();
+    expect(screen.getByText('Brak wolnych sztuk')).toBeInTheDocument();
+    expect(screen.getByText(/Brak dostępnych sztuk w tym momencie\./)).toBeInTheDocument();
   });
 });

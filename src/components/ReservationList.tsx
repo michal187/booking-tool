@@ -13,7 +13,7 @@ interface ReservationListProps {
 }
 
 function formatDate(iso: string): string {
-  return format(parseISO(iso), 'dd MMM yyyy, HH:mm', { locale: pl });
+  return format(parseISO(iso), 'dd.MM.yyyy HH:mm', { locale: pl });
 }
 
 function getStatusBadge(reservation: Reservation) {
@@ -78,9 +78,9 @@ export default function ReservationList({ reservations, equipment, userId, onRet
                       {equipmentMap.get(r.equipmentId) ?? r.equipmentId}
                     </span>
                     {isOverdue && (
-                      <span className="flex items-center gap-1 text-xs text-red-400">
+                      <span className="flex items-center gap-1 text-xs bg-red-500/20 px-2 py-0.5 rounded border border-red-500/30 text-red-400 font-bold tracking-wide">
                         <AlertTriangle className="w-3.5 h-3.5" />
-                        Spóźniony zwrot!
+                        OPÓŹNIENIE ZWROTU!
                       </span>
                     )}
                   </div>

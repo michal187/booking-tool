@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Calendar, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, Clock, AlertCircle } from 'lucide-react';
+import { differenceInMinutes, format, addHours } from 'date-fns';
+import { pl } from 'date-fns/locale';
 import type { CreateReservationInput } from '@/types/schema';
 
 interface ReservationFormProps {
@@ -12,13 +14,39 @@ interface ReservationFormProps {
   onSubmit: (input: CreateReservationInput) => Promise<{ success: boolean; error?: string }>;
 }
 
+function formatDurationPolish(minutes: number): string {
+  if (minutes < 0) return 'niepoprawny czas';
+  if (minutes === 0) return '0 minut';
+  
+  const days = Math.floor(minutes / (24 * 60));
+  const hours = Math.floor((minutes % (24 * 60)) / 60);
+  const mins = minutes % 60;
+  
+  const parts = [];
+  if (days > 0) parts.push(`${days} ${days === 1 ? 'dzień' : 'dni'}`);
+  if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'godzina' : hours > 1 && hours < 5 ? 'godziny' : 'godzin'}`);
+  if (mins > 0) parts.push(`${mins} min`);
+  
+  return parts.join(' ');
+}
+
 export default function ReservationForm({ equipmentName, userId, disabled, disabledReason, onSubmit }: ReservationFormProps) {
   const [startAt, setStartAt] = useState('');
   const [endAt, setEndAt] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = startAt.length > 0 && endAt.length > 0 && !loading && !disabled;
+  // Set default times on mount
+  useEffect(() => {
+    const now = new Date();
+    const defaultStart = format(now, "yyyy-MM-dd'T'HH:mm");
+    const defaultEnd = format(addHours(now, 1), "yyyy-MM-dd'T'HH:mm");
+    setStartAt(defaultStart);
+    setEndAt(defaultEnd);
+  }, [equipmentName]); // refresh defaults on changing equipment
+
+  const durationMinutes = (startAt && endAt) ? differenceInMinutes(new Date(endAt), new Date(startAt)) : 0;
+  const canSubmit = startAt.length > 0 && endAt.length > 0 && !loading && !disabled && durationMinutes >= 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,6 +54,11 @@ export default function ReservationForm({ equipmentName, userId, disabled, disab
 
     if (!startAt || !endAt) {
       setError('Uzupełnij obie daty.');
+      return;
+    }
+
+    if (durationMinutes < 0) {
+      setError('Czas zakończenia nie może być przed czasem rozpoczęcia.');
       return;
     }
 
@@ -44,8 +77,10 @@ export default function ReservationForm({ equipmentName, userId, disabled, disab
     if (!result.success) {
       setError(result.error ?? 'Wystąpił nieznany błąd.');
     } else {
-      setStartAt('');
-      setEndAt('');
+      // Re-initialize to default after success
+      const now = new Date();
+      setStartAt(format(now, "yyyy-MM-dd'T'HH:mm"));
+      setEndAt(format(addHours(now, 1), "yyyy-MM-dd'T'HH:mm"));
     }
   }
 
@@ -87,6 +122,13 @@ export default function ReservationForm({ equipmentName, userId, disabled, disab
           />
         </div>
       </div>
+
+      {startAt && endAt && durationMinutes >= 0 && (
+        <div className="text-xs text-slate-400 flex items-center gap-1.5 bg-slate-800/40 px-3 py-2 rounded-lg border border-slate-700/50">
+          <Clock className="w-3.5 h-3.5 text-blue-400" />
+          Czas rezerwacji: <span className="font-medium text-slate-300">{formatDurationPolish(durationMinutes)}</span>
+        </div>
+      )}
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2 text-red-300 text-sm">
