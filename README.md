@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Booking Tool
 
-## Getting Started
+Simple equipment reservation app for lab and engineering inventory.
 
-First, run the development server:
+The app lets you:
+
+- browse available equipment
+- create time-based reservations
+- see current and upcoming bookings
+- add equipment and block/unblock it in admin mode
+- reset the working database back to a clean template
+
+## Stack
+
+- Next.js 16
+- React 19
+- JSON file database in `data/`
+- Vitest + React Testing Library
+- Playwright
+
+## Run The App
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Layout
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app now uses a template-driven file DB setup:
 
-## Learn More
+- `data/db.json`
+  Working app database. This file changes while you use the app.
+- `data/db.template.json`
+  Clean baseline for the main app.
+- `data/db.test.template.json`
+  Separate baseline used by end-to-end tests.
 
-To learn more about Next.js, take a look at the following resources:
+The runtime DB layer also supports custom paths through environment variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `DB_PATH`
+- `DB_TEMPLATE_PATH`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If the configured DB file does not exist, it is recreated automatically from the configured template.
 
-## Deploy on Vercel
+## Reset The Database
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Reset the main app database back to the clean template:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run db:reset
+```
+
+Reset the isolated Playwright test database:
+
+```bash
+npm run db:test:reset
+```
+
+There is also an API reset endpoint:
+
+```bash
+POST /api/reset
+```
+
+That endpoint restores the active DB from the currently configured template.
+
+## Run Tests
+
+Run the full test suite:
+
+```bash
+npm test
+```
+
+Run only unit, component, and API tests:
+
+```bash
+npm run test:unit
+```
+
+Run unit tests in watch mode:
+
+```bash
+npm run test:unit:watch
+```
+
+Run only end-to-end tests:
+
+```bash
+npm run test:e2e
+```
+
+Notes:
+
+- Playwright uses its own isolated DB file under `.tmp/`.
+- The E2E server is started with `DB_TEMPLATE_PATH=data/db.test.template.json`.
+- If Playwright browsers are missing on a fresh machine, install them with:
+
+```bash
+npx playwright install chromium
+```
+
+## Typical Workflow
+
+Start from a clean app state:
+
+```bash
+npm run db:reset
+npm run dev
+```
+
+Run tests:
+
+```bash
+npm test
+```
+
+## Project Goal
+
+This project is an MVP-style internal booking tool. It is optimized for local development speed and deterministic testing rather than for production-grade database infrastructure.
