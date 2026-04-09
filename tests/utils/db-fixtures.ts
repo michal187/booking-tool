@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import type { DbSchema } from '@/types/schema';
 
-export const dbPath = path.join(process.cwd(), 'data', 'db.json');
+export const dbPath = path.join(process.cwd(), '.tmp', 'playwright-db.json');
+export const dbTemplatePath = path.join(process.cwd(), 'data', 'db.test.template.json');
 
 export const emptyReservationsDb: DbSchema = {
   equipment: [
@@ -42,9 +43,14 @@ export const overlappingReservationDb: DbSchema = {
 };
 
 export function readDbFixture(): DbSchema {
+  if (!fs.existsSync(dbPath)) {
+    return JSON.parse(fs.readFileSync(dbTemplatePath, 'utf-8')) as DbSchema;
+  }
+
   return JSON.parse(fs.readFileSync(dbPath, 'utf-8')) as DbSchema;
 }
 
 export function writeDbFixture(db: DbSchema): void {
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   fs.writeFileSync(dbPath, `${JSON.stringify(db, null, 2)}\n`, 'utf-8');
 }

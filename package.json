@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "db:reset": "node scripts/reset-db.mjs",
+    "db:test:reset": "node scripts/reset-db.mjs --db .tmp/playwright-db.json --template data/db.test.template.json",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

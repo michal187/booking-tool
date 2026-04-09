@@ -1,0 +1,23 @@
+{
+  "equipment": [
+    {
+      "id": "eq-001",
+      "name": "Vector VN1600",
+      "status": "available",
+      "createdAt": "2026-04-09T14:03:45.235Z"
+    },
+    {
+      "id": "eq-002",
+      "name": "Kable DB9",
+      "status": "available",
+      "createdAt": "2026-04-09T14:03:45.235Z"
+    },
+    {
+      "id": "eq-003",
+      "name": "Adaptery OBD-II",
+      "status": "blocked",
+      "createdAt": "2026-04-09T14:03:45.235Z"
+    }
+  ],
+  "reservations": []
+}

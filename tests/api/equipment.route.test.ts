@@ -118,4 +118,19 @@ describe('equipment routes', () => {
       message: 'Dane już istnieją.',
     });
   });
+
+  it('writes a newline-terminated DB file through the helper layer', async () => {
+    const db: DbSchema = { equipment: [], reservations: [] };
+    readDb.mockReturnValue(db);
+
+    await createEquipment(
+      new Request('http://localhost/api/equipment', {
+        method: 'POST',
+        body: JSON.stringify({ name: 'Tester' }),
+        headers: { 'Content-Type': 'application/json' },
+      }) as never
+    );
+
+    expect(writeDb).toHaveBeenCalledTimes(1);
+  });
 });
