@@ -3,6 +3,7 @@
 \usetheme{Madrid}
 \usecolortheme{default}
 \setbeamertemplate{navigation symbols}{}
+\usepackage{graphicx}
 
 \title{Booking Tool}
 \subtitle{3-Hour Hackathon MVP}
@@ -52,8 +53,7 @@
     \end{column}
     \begin{column}{0.44\textwidth}
       \centering
-      \fbox{\parbox[c][0.52\textheight][c]{0.9\textwidth}{\centering
-      Architecture diagram\\or app screenshot}}
+      \includegraphics[width=\textwidth,height=0.52\textheight,keepaspectratio]{app screen.png}
     \end{column}
   \end{columns}
 \end{frame}
@@ -73,8 +73,7 @@
     \end{column}
     \begin{column}{0.46\textwidth}
       \centering
-      \fbox{\parbox[c][0.55\textheight][c]{0.9\textwidth}{\centering
-      Reservation flow screenshot\\or sequence diagram}}
+      \includegraphics[width=\textwidth,height=0.55\textheight,keepaspectratio]{reservation sequence.png}
     \end{column}
   \end{columns}
 \end{frame}
@@ -93,8 +92,7 @@
     \end{column}
     \begin{column}{0.44\textwidth}
       \centering
-      \fbox{\parbox[c][0.5\textheight][c]{0.9\textwidth}{\centering
-      Dashboard screenshot\\or admin panel screenshot}}
+      \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{admin panel.png}
     \end{column}
   \end{columns}
 \end{frame}
@@ -110,21 +108,13 @@
 \end{frame}
 
 \begin{frame}{Testing And Demo Readiness}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \begin{itemize}
-        \item Unit and API tests cover validation and route behavior.
-        \item Playwright covers end-to-end booking scenarios.
-        \item Seeded users and reset scripts make the demo reproducible.
-        \item Documentation includes architecture, use cases, and sequence diagrams.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.4\textwidth}
-      \centering
-      \fbox{\parbox[c][0.42\textheight][c]{0.9\textwidth}{\centering
-      Test results screenshot\\or UML snapshot}}
-    \end{column}
-  \end{columns}
+  \begin{itemize}
+    \item Unit and API tests cover validation and route behavior.
+    \item Playwright covers end-to-end booking scenarios.
+    \item Seeded users and reset scripts make the demo reproducible.
+    \item Documentation includes architecture, use cases, and sequence diagrams.
+    \item The demo can be reset quickly, which matters in a short hackathon presentation.
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Next Steps Beyond The Hackathon}
