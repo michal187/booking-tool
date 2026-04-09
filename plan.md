@@ -14,8 +14,8 @@ isProject: false
 # Specyfikacja MVP rezerwacji sprzętu
 
 ## Zakres
-- Aplikacja: Single Page Dashboard (`React + TypeScript + Vite + Tailwind`).
-- Stan: `Zustand + persist(localStorage)` dla danych domenowych.
+- Aplikacja: Single Page Dashboard (`Next.js + TypeScript + Tailwind CSS`).
+- Dane: `JSON file` jako najszybszy setup full-stack na hackathon.
 - Tryb roli: `Simulate Admin/User` jako stan UI, bez persist (po reload start jako `User`).
 - Daty: `date-fns`.
 
@@ -171,7 +171,7 @@ flowchart TD
 - Seed uruchamia się tylko przy pustym store.
 
 ## Założenia implementacyjne (KISS)
-- Brak backendu i autoryzacji serwerowej.
+- Minimalny backend przez `Next.js API routes` czytające/zapisujące `JSON file`.
 - Brak stref czasowych wieloregionowych (lokalny czas przeglądarki).
 - Brak edycji/usuwania rezerwacji w MVP (tylko tworzenie i listowanie).
 

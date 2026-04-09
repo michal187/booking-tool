@@ -5,17 +5,18 @@ Przygotować szczegółowy plan realizacji MVP rezerwacji sprzętu (3h), zgodny 
 
 ## Założenia zgodności
 - TypeScript strict, bez `any`.
-- Architektura `Fat Store, Thin Components`.
-- Daty w store jako ISO stringi.
+- Architektura `Next.js API + Thin Components`.
+- Daty w JSON file jako ISO stringi.
 - UI teksty po polsku, kod po angielsku.
 - `blocked` jako soft status wizualny (nie blokuje zapisu rezerwacji).
+- Stack ograniczony do `Next.js + TypeScript + JSON file + Tailwind CSS`.
 
 ## Proponowana zawartość TODO.md
 
 ### Faza 0 — Bootstrap projektu (15 min)
-- [ ] `B1` Zweryfikować dostępność narzędzi (`node`, `npm`) i uruchomić scaffold `React + Vite + TS`.
-- [ ] `B2` Dodać i skonfigurować `tailwindcss`, `zustand`, `date-fns`, `lucide-react`.
-- [ ] `B3` Ustawić alias importów `@/` i strukturę katalogów: `src/types`, `src/store`, `src/components`, `src/features`.
+- [ ] `B1` Zweryfikować dostępność narzędzi (`node`, `npm`) i uruchomić scaffold `Next.js + TypeScript`.
+- [ ] `B2` Dodać i skonfigurować `tailwindcss` i `date-fns`.
+- [ ] `B3` Ustawić alias importów `@/` i strukturę katalogów: `src/types`, `src/lib`, `src/components`, `src/features`, `src/app/api`.
 - [ ] `B4` Potwierdzić `tsconfig` strict mode i brak `any`.
 
 ### Faza 1 — Model danych i kontrakty (20 min)
@@ -24,8 +25,8 @@ Przygotować szczegółowy plan realizacji MVP rezerwacji sprzętu (3h), zgodny 
 - [ ] `D3` Zweryfikować zgodność nazw i pól z planem (ISO stringi, brak pól zbędnych).
 
 ### Faza 2 — Store i seed (30 min)
-- [ ] `S1` Utworzyć `src/store/useEquipmentStore.ts` z `zustand + persist` dla `equipment` i `reservations`.
-- [ ] `S2` Dodać `hydrated` + obsługę rehydrate (flaga gotowości stanu).
+- [ ] `S1` Utworzyć strukturę danych w `JSON file` dla `equipment` i `reservations`.
+- [ ] `S2` Dodać serwis odczytu/zapisu pliku JSON (bez dodatkowej bazy danych).
 - [ ] `S3` Zaimplementować `seedInitialData()` idempotentnie (seed tylko gdy lista pusta).
 - [ ] `S4` Wprowadzić pełną listę seedową 20 pozycji sprzętu.
 
@@ -43,6 +44,7 @@ Przygotować szczegółowy plan realizacji MVP rezerwacji sprzętu (3h), zgodny 
 - [ ] `C2` Zaimplementować `toggleEquipmentBlocked(equipmentId)` (`available <-> blocked`).
 - [ ] `C3` Zaimplementować `createReservation(input)` z atomowym flow: validate -> save -> zwrot wyniku.
 - [ ] `C4` Dopilnować, że `blocked` nie uczestniczy w odrzucaniu rezerwacji.
+- [ ] `C5` Wystawić operacje CRUD jako `Next.js API routes` pracujące na `JSON file`.
 
 ### Faza 5 — UI Dashboard (35 min)
 - [ ] `U1` Nagłówek z przełącznikiem `Simulate Admin/User` (stan UI, bez persist, domyślnie `User`).
@@ -67,6 +69,7 @@ Przygotować szczegółowy plan realizacji MVP rezerwacji sprzętu (3h), zgodny 
 - [ ] `T6` `blocked` soft: status widoczny, ale zapis rezerwacji możliwy.
 - [ ] `T7` Persist: rezerwacje/sprzęt zostają po reload; rola wraca do `User`.
 - [ ] `T8` Przejrzeć lint/typecheck i naprawić błędy krytyczne.
+- [ ] `T9` Zweryfikować integralność danych po restartach serwera (zapis w `JSON file`).
 
 ## Mapowanie na pierwotne T1-T8
 - Oryginalne `T1` -> `D1-D3`
