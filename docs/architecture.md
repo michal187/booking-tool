@@ -192,16 +192,16 @@ flowchart TB
   end
 
   subgraph Server
-    auth[/api/auth/login]
-    users[/api/users]
-    eq[/api/equipment]
-    eqid[/api/equipment/:id]
-    res[/api/reservations]
-    resid[/api/reservations/:id]
-    seed[/api/seed]
-    reset[/api/reset]
-    validation[validation.ts]
-    db[db.ts]
+    auth["/api/auth/login"]
+    users["/api/users"]
+    eq["/api/equipment"]
+    eqid["/api/equipment/:id"]
+    res["/api/reservations"]
+    resid["/api/reservations/:id"]
+    seed["/api/seed"]
+    reset["/api/reset"]
+    validation["validation.ts"]
+    db["db.ts"]
   end
 
   file[(data/db.json)]
