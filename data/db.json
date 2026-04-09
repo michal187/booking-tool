@@ -3,21 +3,29 @@
     {
       "id": "user-001",
       "name": "Jan Kowalski",
+      "login": "jan",
+      "password": "jan123",
       "role": "user"
     },
     {
       "id": "user-002",
       "name": "Anna Nowak",
+      "login": "anna",
+      "password": "anna123",
       "role": "user"
     },
     {
       "id": "user-003",
       "name": "Piotr Inżynier",
+      "login": "piotr",
+      "password": "piotr123",
       "role": "user"
     },
     {
       "id": "user-admin",
       "name": "Administrator Magazynu",
+      "login": "admin",
+      "password": "admin123",
       "role": "admin"
     }
   ],
@@ -26,349 +34,349 @@
       "id": "eq-001",
       "name": "Vector VN1600",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-002",
       "name": "Vector VN1600",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-003",
       "name": "Vector VN1600",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-004",
       "name": "Kable DB9",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-005",
       "name": "Kable DB9",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-006",
       "name": "Kable DB9",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-007",
       "name": "Kable DB9",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-008",
       "name": "Kable DB9",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-009",
       "name": "Adaptery OBD-II",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-010",
       "name": "Adaptery OBD-II",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-011",
       "name": "Adaptery OBD-II",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-012",
       "name": "Adaptery OBD-II",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-013",
       "name": "Terminatory CAN",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-014",
       "name": "Terminatory CAN",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-015",
       "name": "Terminatory CAN",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-016",
       "name": "Rozgałęziatory Y",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-017",
       "name": "Rozgałęziatory Y",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-018",
       "name": "Laptopy inżynierskie",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-019",
       "name": "Laptopy inżynierskie",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-020",
       "name": "Laptopy inżynierskie",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-021",
       "name": "Laptopy inżynierskie",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-022",
       "name": "Tablety Rugged",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-023",
       "name": "Tablety Rugged",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-024",
       "name": "Tablety Rugged",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-025",
       "name": "Data loggery",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-026",
       "name": "Data loggery",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-027",
       "name": "Oscyloskopy cyfrowe",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-028",
       "name": "Oscyloskopy cyfrowe",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-029",
       "name": "Multimetry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-030",
       "name": "Multimetry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-031",
       "name": "Multimetry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-032",
       "name": "Multimetry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-033",
       "name": "Multimetry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-034",
       "name": "Kamery termowizyjne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-035",
       "name": "Kamery termowizyjne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-036",
       "name": "Zasilacze laboratoryjne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-037",
       "name": "Zasilacze laboratoryjne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-038",
       "name": "Zasilacze laboratoryjne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-039",
       "name": "Breakout boxy",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-040",
       "name": "Breakout boxy",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-041",
       "name": "Breakout boxy",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-042",
       "name": "Termopary",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-043",
       "name": "Termopary",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-044",
       "name": "Termopary",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-045",
       "name": "Termopary",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-046",
       "name": "Akcelerometry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-047",
       "name": "Akcelerometry",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-048",
       "name": "Moduły pomiarowe ETAS",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-049",
       "name": "Moduły pomiarowe ETAS",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-050",
       "name": "Skanery 3D",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-051",
       "name": "Ramiona pomiarowe CMM",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-052",
       "name": "Klucze dynamometryczne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-053",
       "name": "Klucze dynamometryczne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-054",
       "name": "Klucze dynamometryczne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-055",
       "name": "Endoskopy techniczne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     },
     {
       "id": "eq-056",
       "name": "Endoskopy techniczne",
       "status": "available",
-      "createdAt": "2026-04-09T15:07:12.712Z"
+      "createdAt": "2026-04-09T15:24:19.459Z"
     }
   ],
   "reservations": [
     {
-      "id": "res-1775747442891-68puu",
-      "equipmentId": "eq-001",
+      "id": "res-1775748450705-2qvra",
+      "equipmentId": "eq-009",
       "userId": "user-001",
-      "startAt": "2026-04-09T16:00:00.000Z",
-      "endAt": "2026-04-10T08:00:00.000Z",
-      "status": "pending",
+      "startAt": "2026-04-09T15:00:00.000Z",
+      "endAt": "2026-04-10T05:00:00.000Z",
+      "status": "confirmed",
       "isReturned": false,
-      "createdAt": "2026-04-09T15:10:42.891Z"
+      "createdAt": "2026-04-09T15:27:30.705Z"
     }
   ]
 }

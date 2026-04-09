@@ -1,30 +1,42 @@
 'use client';
 
-import { Shield, User, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { Shield, User, LogIn, LogOut } from 'lucide-react';
+import { useState } from 'react';
 import type { User as UserType } from '@/types/schema';
 
 interface HeaderProps {
-  users: UserType[];
   currentUser: UserType | null;
-  onSelectUser: (user: UserType) => void;
+  onLogin: (login: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  onLogout: () => void;
 }
 
-export default function Header({ users, currentUser, onSelectUser }: HeaderProps) {
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+export default function Header({ currentUser, onLogin, onLogout }: HeaderProps) {
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
+  const isLoggedIn = currentUser !== null;
   const isAdmin = currentUser?.role === 'admin';
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!login.trim() || !password.trim()) {
+      setError('Uzupełnij login i hasło.');
+      return;
+    }
+    setLoading(true);
+    const result = await onLogin(login.trim(), password.trim());
+    setLoading(false);
+    if (!result.success) {
+      setError(result.error ?? 'Błąd logowania.');
+    } else {
+      setLogin('');
+      setPassword('');
+      setError(null);
+    }
+  }
 
   return (
     <header className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-4 flex items-center justify-between shadow-lg">
@@ -38,61 +50,64 @@ export default function Header({ users, currentUser, onSelectUser }: HeaderProps
         </div>
       </div>
 
-      {/* User selector dropdown */}
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setOpen(!open)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
-            isAdmin
-              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
-              : 'bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30'
-          }`}
-          id="user-selector"
-        >
-          {isAdmin ? (
-            <Shield className="w-4 h-4" />
-          ) : (
-            <User className="w-4 h-4" />
-          )}
-          {currentUser?.name ?? 'Wybierz użytkownika'}
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
-        </button>
-
-        {open && (
-          <div className="absolute right-0 top-full mt-2 w-64 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl overflow-hidden z-50 animate-slide-in">
-            <div className="px-3 py-2 border-b border-slate-700">
-              <p className="text-xs text-slate-400 font-medium">Zaloguj się jako</p>
+      {isLoggedIn ? (
+        /* Logged in — name on left, logout button on right */
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <Shield className="w-4 h-4 text-amber-400" />
+            ) : (
+              <User className="w-4 h-4 text-blue-400" />
+            )}
+            <div className="text-right">
+              <p className="text-sm font-medium text-white">{currentUser.name}</p>
+              <p className="text-[10px] text-slate-400">
+                {isAdmin ? 'Administrator' : 'Użytkownik'}
+              </p>
             </div>
-            {users.map((user) => (
-              <button
-                key={user.id}
-                onClick={() => {
-                  onSelectUser(user);
-                  setOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-slate-700/50 transition-colors cursor-pointer ${
-                  currentUser?.id === user.id ? 'bg-slate-700/30' : ''
-                }`}
-              >
-                {user.role === 'admin' ? (
-                  <Shield className="w-4 h-4 text-amber-400 shrink-0" />
-                ) : (
-                  <User className="w-4 h-4 text-blue-400 shrink-0" />
-                )}
-                <div>
-                  <p className="text-sm text-white font-medium">{user.name}</p>
-                  <p className="text-xs text-slate-400">
-                    {user.role === 'admin' ? 'Administrator' : 'Użytkownik'}
-                  </p>
-                </div>
-                {currentUser?.id === user.id && (
-                  <span className="ml-auto text-xs text-emerald-400">●</span>
-                )}
-              </button>
-            ))}
           </div>
-        )}
-      </div>
+          <button
+            onClick={onLogout}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-500/25 transition-all cursor-pointer"
+            id="logout-button"
+          >
+            <LogOut className="w-4 h-4" />
+            Wyloguj
+          </button>
+        </div>
+      ) : (
+        /* Not logged in — login form */
+        <form onSubmit={handleLogin} className="flex items-center gap-2">
+          {error && (
+            <span className="text-xs text-red-400 mr-2">{error}</span>
+          )}
+          <input
+            type="text"
+            placeholder="Login"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+            className="w-28 px-3 py-1.5 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+            id="login-input"
+          />
+          <input
+            type="password"
+            placeholder="Hasło"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-28 px-3 py-1.5 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+            id="password-input"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30 transition-all cursor-pointer disabled:opacity-50"
+            id="login-button"
+          >
+            <LogIn className="w-4 h-4" />
+            {loading ? '...' : 'Zaloguj'}
+          </button>
+        </form>
+      )}
     </header>
   );
 }

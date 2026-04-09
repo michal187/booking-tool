@@ -1,4 +1,4 @@
-import type { Equipment, User } from '@/types/schema';
+import type { Equipment, DbUser } from '@/types/schema';
 
 const SEED_CATEGORIES: { name: string; count: number }[] = [
   { name: 'Vector VN1600', count: 3 },
@@ -23,12 +23,12 @@ const SEED_CATEGORIES: { name: string; count: number }[] = [
   { name: 'Endoskopy techniczne', count: 2 },
 ];
 
-export function buildSeedUsers(): User[] {
+export function buildSeedUsers(): DbUser[] {
   return [
-    { id: 'user-001', name: 'Jan Kowalski', role: 'user' },
-    { id: 'user-002', name: 'Anna Nowak', role: 'user' },
-    { id: 'user-003', name: 'Piotr Inżynier', role: 'user' },
-    { id: 'user-admin', name: 'Administrator Magazynu', role: 'admin' },
+    { id: 'user-001', name: 'Jan Kowalski', login: 'jan', password: 'jan123', role: 'user' },
+    { id: 'user-002', name: 'Anna Nowak', login: 'anna', password: 'anna123', role: 'user' },
+    { id: 'user-003', name: 'Piotr Inżynier', login: 'piotr', password: 'piotr123', role: 'user' },
+    { id: 'user-admin', name: 'Administrator Magazynu', login: 'admin', password: 'admin123', role: 'admin' },
   ];
 }
 

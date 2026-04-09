@@ -9,7 +9,22 @@ export type ReservationStatus = 'pending' | 'confirmed' | 'rejected';
 export interface User {
   id: string;
   name: string;
+  login: string;
   role: Role;
+}
+
+/** Server-side user with password — never sent to client */
+export interface DbUser {
+  id: string;
+  name: string;
+  login: string;
+  password: string;
+  role: Role;
+}
+
+export interface LoginInput {
+  login: string;
+  password: string;
 }
 
 export interface Equipment {
@@ -54,7 +69,7 @@ export interface EquipmentGroup {
 }
 
 export interface DbSchema {
-  users: User[];
+  users: DbUser[];
   equipment: Equipment[];
   reservations: Reservation[];
 }
