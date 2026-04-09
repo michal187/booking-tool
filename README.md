@@ -1,22 +1,45 @@
 # Booking Tool
 
-Simple equipment reservation app for lab and engineering inventory.
+Internal equipment booking app for lab and engineering inventory.
 
-The app lets you:
+The current implementation supports:
 
-- browse available equipment
-- create time-based reservations
-- see current and upcoming bookings
-- add equipment and block/unblock it in admin mode
-- reset the working database back to a clean template
+- login with seeded test users
+- browsing equipment by category and current availability
+- creating reservation requests for a selected time range
+- automatic assignment of a free physical unit within a category
+- reviewing personal reservations and returning confirmed loans
+- admin queue handling: approve, reject, confirm return
+- adding new equipment units
+- resetting the file-based database to a clean template
+
+## Documentation
+
+- [Architecture and UML](docs/architecture.md)
+
+That document includes:
+
+- system overview
+- actors and use cases
+- reservation and admin sequence diagrams
+- data model notes
+- API and persistence flow summary
 
 ## Stack
 
 - Next.js 16
 - React 19
+- TypeScript
+- Tailwind CSS 4
 - JSON file database in `data/`
 - Vitest + React Testing Library
 - Playwright
+
+## How It Works
+
+The app seeds initial users and equipment on first launch. Users log in, select an equipment category, and submit a reservation request for a time range. The backend finds an available unit in that category, validates the requested slot, and stores the reservation as `pending`.
+
+Admins work from the same UI. They can review the pending queue, confirm or reject requests, add more equipment units, and mark confirmed reservations as returned. Availability is derived from current reservations rather than from a separate inventory counter.
 
 ## Run The App
 
@@ -34,55 +57,85 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Seeded Test Accounts
+
+- `jan` / `jan123` - user
+- `anna` / `anna123` - user
+- `piotr` / `piotr123` - user
+- `admin` / `admin123` - admin
+
 ## Database Layout
 
-The app now uses a template-driven file DB setup:
+The runtime uses a template-driven file database:
 
 - `data/db.json`
-  Working app database. This file changes while you use the app.
+  Active application database.
 - `data/db.template.json`
-  Clean baseline for the main app.
+  Clean baseline for local app usage.
 - `data/db.test.template.json`
-  Separate baseline used by end-to-end tests.
+  Clean baseline for Playwright.
 
-The runtime DB layer also supports custom paths through environment variables:
+The DB layer also supports:
 
 - `DB_PATH`
 - `DB_TEMPLATE_PATH`
 
-If the configured DB file does not exist, it is recreated automatically from the configured template.
+If the configured DB file is missing, it is recreated from the configured template.
+
+## API Overview
+
+- `POST /api/auth/login`
+  Validate credentials and return the user profile without the password.
+- `GET /api/users`
+  Return seeded users for UI display.
+- `GET /api/equipment`
+  Return all equipment units.
+- `GET /api/equipment?grouped=true`
+  Return grouped equipment with computed availability.
+- `POST /api/equipment`
+  Add a new equipment unit.
+- `PATCH /api/equipment/:id`
+  Toggle `available` / `blocked`.
+- `GET /api/reservations`
+  Return reservations, optionally filtered by `userId`.
+- `POST /api/reservations`
+  Create a pending reservation request.
+- `PATCH /api/reservations/:id`
+  Perform admin actions: `confirm`, `reject`, `return`.
+- `POST /api/seed`
+  Seed users and equipment if data is missing.
+- `POST /api/reset`
+  Restore the active DB from the current template.
 
 ## Reset The Database
 
-Reset the main app database back to the clean template:
+Reset the main app database:
 
 ```bash
 npm run db:reset
 ```
 
-Reset the isolated Playwright test database:
+Reset the isolated Playwright database:
 
 ```bash
 npm run db:test:reset
 ```
 
-There is also an API reset endpoint:
+API reset endpoint:
 
 ```bash
 POST /api/reset
 ```
 
-That endpoint restores the active DB from the currently configured template.
-
 ## Run Tests
 
-Run the full test suite:
+Run all tests:
 
 ```bash
 npm test
 ```
 
-Run only unit, component, and API tests:
+Run unit, component, and API tests only:
 
 ```bash
 npm run test:unit
@@ -94,7 +147,7 @@ Run unit tests in watch mode:
 npm run test:unit:watch
 ```
 
-Run only end-to-end tests:
+Run end-to-end tests only:
 
 ```bash
 npm run test:e2e
@@ -102,9 +155,9 @@ npm run test:e2e
 
 Notes:
 
-- Playwright uses its own isolated DB file under `.tmp/`.
-- The E2E server is started with `DB_TEMPLATE_PATH=data/db.test.template.json`.
-- If Playwright browsers are missing on a fresh machine, install them with:
+- Playwright uses an isolated DB file under `.tmp/`.
+- E2E runs with `DB_TEMPLATE_PATH=data/db.test.template.json`.
+- On a fresh machine, browsers may need:
 
 ```bash
 npx playwright install chromium
@@ -112,19 +165,24 @@ npx playwright install chromium
 
 ## Typical Workflow
 
-Start from a clean app state:
-
 ```bash
 npm run db:reset
 npm run dev
 ```
 
-Run tests:
+In a second terminal:
 
 ```bash
 npm test
 ```
 
-## Project Goal
+## Scope And Limitations
 
-This project is an MVP-style internal booking tool. It is optimized for local development speed and deterministic testing rather than for production-grade database infrastructure.
+This is an MVP-style internal tool optimized for local development speed and deterministic testing.
+
+Important implementation notes:
+
+- persistence is a local JSON file, not a production database
+- login is credential-based, but there is no session layer
+- API routes do not currently enforce authorization server-side
+- blocked equipment is treated as a soft inventory flag in the current implementation
