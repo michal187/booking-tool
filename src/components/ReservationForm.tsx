@@ -5,17 +5,20 @@ import { Calendar, Clock } from 'lucide-react';
 import type { CreateReservationInput } from '@/types/schema';
 
 interface ReservationFormProps {
-  equipmentId: string;
+  equipmentName: string;
+  userId: string;
+  disabled?: boolean;
+  disabledReason?: string;
   onSubmit: (input: CreateReservationInput) => Promise<{ success: boolean; error?: string }>;
 }
 
-export default function ReservationForm({ equipmentId, onSubmit }: ReservationFormProps) {
+export default function ReservationForm({ equipmentName, userId, disabled, disabledReason, onSubmit }: ReservationFormProps) {
   const [startAt, setStartAt] = useState('');
   const [endAt, setEndAt] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const canSubmit = startAt.length > 0 && endAt.length > 0 && !loading;
+  const canSubmit = startAt.length > 0 && endAt.length > 0 && !loading && !disabled;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,13 +29,13 @@ export default function ReservationForm({ equipmentId, onSubmit }: ReservationFo
       return;
     }
 
-    // Normalize to full hours (datetime-local gives "YYYY-MM-DDTHH:MM")
     const startISO = new Date(startAt).toISOString();
     const endISO = new Date(endAt).toISOString();
 
     setLoading(true);
     const result = await onSubmit({
-      equipmentId,
+      equipmentName,
+      userId,
       startAt: startISO,
       endAt: endISO,
     });
@@ -48,6 +51,12 @@ export default function ReservationForm({ equipmentId, onSubmit }: ReservationFo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {disabled && disabledReason && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2 text-red-300 text-sm">
+          ⚠️ {disabledReason}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="start-date" className="flex items-center gap-1.5 text-xs font-medium text-slate-400 mb-1.5">
@@ -57,10 +66,10 @@ export default function ReservationForm({ equipmentId, onSubmit }: ReservationFo
           <input
             id="start-date"
             type="datetime-local"
-            step="3600"
             value={startAt}
             onChange={(e) => setStartAt(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+            disabled={disabled}
+            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           />
         </div>
         <div>
@@ -71,10 +80,10 @@ export default function ReservationForm({ equipmentId, onSubmit }: ReservationFo
           <input
             id="end-date"
             type="datetime-local"
-            step="3600"
             value={endAt}
             onChange={(e) => setEndAt(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+            disabled={disabled}
+            className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           />
         </div>
       </div>
@@ -94,7 +103,7 @@ export default function ReservationForm({ equipmentId, onSubmit }: ReservationFo
             : 'bg-slate-700 text-slate-500 cursor-not-allowed opacity-50'
         }`}
       >
-        {loading ? 'Rezerwuję...' : '🔒 Zarezerwuj'}
+        {loading ? 'Wysyłam zgłoszenie...' : '📋 Złóż rezerwację'}
       </button>
     </form>
   );

@@ -1,30 +1,37 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import type { Role, Equipment, Reservation, CreateReservationInput } from '@/types/schema';
+import type { User, Equipment, Reservation, EquipmentGroup, CreateReservationInput } from '@/types/schema';
+import { parseISO } from 'date-fns';
 import Header from '@/components/Header';
 import EquipmentList from '@/components/EquipmentList';
 import EquipmentDetail from '@/components/EquipmentDetail';
 import ReservationList from '@/components/ReservationList';
 import AdminPanel from '@/components/AdminPanel';
+import OverdueAlert from '@/components/OverdueAlert';
 import Toast, { showToast } from '@/components/Toast';
 import { Package } from 'lucide-react';
 
 export default function HomePage() {
-  const [role, setRole] = useState<Role>('user');
+  const [users, setUsers] = useState<User[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [groups, setGroups] = useState<EquipmentGroup[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedName, setSelectedName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
-    const [eqRes, resRes] = await Promise.all([
+    const [eqRes, groupRes, resRes] = await Promise.all([
       fetch('/api/equipment'),
+      fetch('/api/equipment?grouped=true'),
       fetch('/api/reservations'),
     ]);
     const eq = (await eqRes.json()) as Equipment[];
+    const grp = (await groupRes.json()) as EquipmentGroup[];
     const res = (await resRes.json()) as Reservation[];
     setEquipment(eq);
+    setGroups(grp);
     setReservations(res);
   }, []);
 
@@ -32,13 +39,34 @@ export default function HomePage() {
     async function init() {
       // Seed if empty
       await fetch('/api/seed', { method: 'POST' });
+
+      // Fetch users
+      const usersRes = await fetch('/api/users');
+      const usersData = (await usersRes.json()) as User[];
+      setUsers(usersData);
+
+      // Default to first regular user
+      const defaultUser = usersData.find((u) => u.role === 'user') ?? usersData[0];
+      if (defaultUser) setCurrentUser(defaultUser);
+
       await fetchData();
       setLoading(false);
     }
     init();
   }, [fetchData]);
 
-  const selectedEquipment = equipment.find((e) => e.id === selectedId) ?? null;
+  const selectedGroup = groups.find((g) => g.name === selectedName) ?? null;
+
+  const now = new Date();
+  const isOverdue = currentUser
+    ? reservations.some(
+        (r) =>
+          r.userId === currentUser.id &&
+          r.status === 'confirmed' &&
+          !r.isReturned &&
+          parseISO(r.endAt) < now
+      )
+    : false;
 
   async function handleReserve(
     input: CreateReservationInput
@@ -55,7 +83,7 @@ export default function HomePage() {
       return { success: false, error: data.error };
     }
 
-    showToast('success', 'Rezerwacja utworzona pomyślnie!');
+    showToast('success', 'Rezerwacja złożona — oczekuje na akceptację!');
     await fetchData();
     return { success: true };
   }
@@ -76,19 +104,24 @@ export default function HomePage() {
     }
   }
 
-  async function handleToggleBlocked(id: string) {
-    const res = await fetch(`/api/equipment/${id}`, { method: 'PATCH' });
+  async function handlePatchReservation(id: string, action: 'confirm' | 'reject' | 'return') {
+    const res = await fetch(`/api/reservations/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action }),
+    });
+
     if (res.ok) {
-      const updated = (await res.json()) as Equipment;
-      showToast(
-        'success',
-        `${updated.name}: ${updated.status === 'blocked' ? 'zablokowany' : 'odblokowany'}`
-      );
+      const labels = { confirm: 'Zaakceptowano', reject: 'Odrzucono', return: 'Zwrot potwierdzony' };
+      showToast('success', labels[action]);
       await fetchData();
+    } else {
+      const data = (await res.json()) as { error: string };
+      showToast('error', data.error);
     }
   }
 
-  if (loading) {
+  if (loading || !currentUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center gap-3">
@@ -103,27 +136,57 @@ export default function HomePage() {
     <div className="flex flex-col h-screen">
       <Toast />
       <Header
-        role={role}
-        onToggleRole={() => setRole((r) => (r === 'user' ? 'admin' : 'user'))}
+        users={users}
+        currentUser={currentUser}
+        onSelectUser={(user) => {
+          setCurrentUser(user);
+          setSelectedName(null);
+        }}
       />
+
+      {/* Global overdue alert */}
+      {isOverdue && (
+        <div className="px-6 pt-4">
+          <OverdueAlert
+            reservations={reservations}
+            equipment={equipment}
+            userId={currentUser.id}
+          />
+        </div>
+      )}
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel — equipment list */}
         <aside className="w-80 bg-slate-900/60 border-r border-slate-700/50 flex flex-col shrink-0">
           <EquipmentList
-            equipment={equipment}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
+            groups={groups}
+            selectedName={selectedName}
+            onSelect={setSelectedName}
           />
         </aside>
 
         {/* Right panel — details + reservations */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
-          {selectedEquipment ? (
+          {/* Admin panel always visible at the top for admins */}
+          {currentUser.role === 'admin' && (
+            <AdminPanel
+              equipment={equipment}
+              reservations={reservations}
+              users={users}
+              onAddEquipment={handleAddEquipment}
+              onApprove={(id) => handlePatchReservation(id, 'confirm')}
+              onReject={(id) => handlePatchReservation(id, 'reject')}
+              onReturn={(id) => handlePatchReservation(id, 'return')}
+            />
+          )}
+
+          {selectedGroup ? (
             <>
               <EquipmentDetail
-                equipment={selectedEquipment}
+                group={selectedGroup}
                 reservations={reservations}
+                userId={currentUser.id}
+                isOverdue={isOverdue}
                 onReserve={handleReserve}
               />
 
@@ -131,26 +194,19 @@ export default function HomePage() {
                 <ReservationList
                   reservations={reservations}
                   equipment={equipment}
+                  userId={currentUser.id}
+                  onReturn={(id) => handlePatchReservation(id, 'return')}
                 />
               </div>
-
-              {role === 'admin' && (
-                <div className="border-t border-slate-700/50 pt-6">
-                  <AdminPanel
-                    equipment={equipment}
-                    selectedId={selectedId}
-                    onAddEquipment={handleAddEquipment}
-                    onToggleBlocked={handleToggleBlocked}
-                  />
-                </div>
-              )}
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-slate-500">
-              <Package className="w-16 h-16 mb-4 opacity-30" />
-              <p className="text-lg font-medium">Wybierz sprzęt z listy</p>
-              <p className="text-sm mt-1">Kliknij na element po lewej, aby zobaczyć szczegóły</p>
-            </div>
+            !currentUser.role.includes('admin') && (
+              <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                <Package className="w-16 h-16 mb-4 opacity-30" />
+                <p className="text-lg font-medium">Wybierz sprzęt z listy</p>
+                <p className="text-sm mt-1">Kliknij na kategorię po lewej, aby zobaczyć szczegóły</p>
+              </div>
+            )
           )}
         </main>
       </div>

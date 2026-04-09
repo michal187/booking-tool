@@ -1,14 +1,16 @@
 'use client';
 
-import { format, parseISO, isWithinInterval } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
-import { Info, AlertTriangle, CalendarCheck, Clock } from 'lucide-react';
-import type { Equipment, Reservation, CreateReservationInput } from '@/types/schema';
+import { CalendarCheck, Clock, Info } from 'lucide-react';
+import type { EquipmentGroup, Reservation, CreateReservationInput } from '@/types/schema';
 import ReservationForm from './ReservationForm';
 
 interface EquipmentDetailProps {
-  equipment: Equipment;
+  group: EquipmentGroup;
   reservations: Reservation[];
+  userId: string;
+  isOverdue: boolean;
   onReserve: (input: CreateReservationInput) => Promise<{ success: boolean; error?: string }>;
 }
 
@@ -16,71 +18,68 @@ function formatDate(iso: string): string {
   return format(parseISO(iso), 'dd MMM yyyy, HH:mm', { locale: pl });
 }
 
-export default function EquipmentDetail({ equipment, reservations, onReserve }: EquipmentDetailProps) {
+export default function EquipmentDetail({ group, reservations, userId, isOverdue, onReserve }: EquipmentDetailProps) {
   const now = new Date();
-  const equipmentReservations = reservations
-    .filter((r) => r.equipmentId === equipment.id)
+
+  // Get all reservations for this equipment group
+  const equipmentIds = new Set(group.items.map((i) => i.id));
+  const groupReservations = reservations
+    .filter((r) => equipmentIds.has(r.equipmentId))
     .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
 
-  const activeReservation = equipmentReservations.find((r) =>
-    isWithinInterval(now, { start: parseISO(r.startAt), end: parseISO(r.endAt) })
+  const upcomingReservations = groupReservations.filter(
+    (r) => parseISO(r.startAt) > now && (r.status === 'pending' || r.status === 'confirmed')
   );
 
-  const upcomingReservations = equipmentReservations.filter(
-    (r) => parseISO(r.startAt) > now
-  );
-
-  const isBlocked = equipment.status === 'blocked';
+  const hasAvailable = group.available > 0;
+  const formDisabled = !hasAvailable || isOverdue;
+  const disabledReason = isOverdue
+    ? 'Masz nieoddany sprzęt po terminie. Najpierw dokonaj zwrotu.'
+    : !hasAvailable
+    ? 'Brak dostępnych sztuk w tym momencie.'
+    : undefined;
 
   return (
     <div className="space-y-6">
       {/* Equipment header */}
       <div>
         <div className="flex items-center gap-3 mb-2">
-          <h2 className="text-2xl font-bold text-white">{equipment.name}</h2>
+          <h2 className="text-2xl font-bold text-white">{group.name}</h2>
           <span
             className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              isBlocked
-                ? 'bg-red-500/15 text-red-300 border border-red-500/30'
-                : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+              hasAvailable
+                ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                : 'bg-red-500/15 text-red-300 border border-red-500/30'
             }`}
           >
-            {isBlocked ? 'Zablokowany' : 'Dostępny'}
+            Dostępne: {group.available} z {group.total}
           </span>
         </div>
-        <p className="text-slate-400 text-sm">ID: {equipment.id}</p>
+        <p className="text-slate-400 text-sm">
+          {group.total} {group.total === 1 ? 'sztuka' : group.total < 5 ? 'sztuki' : 'sztuk'} w magazynie
+        </p>
       </div>
 
       {/* Current status */}
-      {activeReservation ? (
-        <div className="bg-amber-500/10 border border-amber-500/25 rounded-xl p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
-          <div>
-            <p className="text-amber-200 font-medium text-sm">Aktualnie wypożyczony</p>
-            <p className="text-amber-300/70 text-sm mt-1">
-              Do: {formatDate(activeReservation.endAt)}
-            </p>
-          </div>
-        </div>
-      ) : (
+      {hasAvailable ? (
         <div className="bg-emerald-500/10 border border-emerald-500/25 rounded-xl p-4 flex items-start gap-3">
           <CalendarCheck className="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-emerald-200 font-medium text-sm">Dostępny do rezerwacji</p>
             <p className="text-emerald-300/70 text-sm mt-1">
-              Możesz zarezerwować ten sprzęt poniżej.
+              {group.available} {group.available === 1 ? 'sztuka wolna' : group.available < 5 ? 'sztuki wolne' : 'sztuk wolnych'}. System automatycznie przypisze Ci wolną jednostkę.
             </p>
           </div>
         </div>
-      )}
-
-      {/* Blocked info */}
-      {isBlocked && (
-        <div className="bg-slate-700/40 border border-slate-600/50 rounded-xl p-4 flex items-start gap-3">
-          <Info className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
-          <p className="text-slate-400 text-sm">
-            Ten sprzęt jest oznaczony jako zablokowany, ale nadal można go zarezerwować.
-          </p>
+      ) : (
+        <div className="bg-red-500/10 border border-red-500/25 rounded-xl p-4 flex items-start gap-3">
+          <Info className="w-5 h-5 text-red-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-red-200 font-medium text-sm">Brak wolnych sztuk</p>
+            <p className="text-red-300/70 text-sm mt-1">
+              Wszystkie sztuki są aktualnie zarezerwowane lub wypożyczone.
+            </p>
+          </div>
         </div>
       )}
 
@@ -90,7 +89,13 @@ export default function EquipmentDetail({ equipment, reservations, onReserve }: 
           <Clock className="w-4 h-4 text-blue-400" />
           Zarezerwuj
         </h3>
-        <ReservationForm equipmentId={equipment.id} onSubmit={onReserve} />
+        <ReservationForm
+          equipmentName={group.name}
+          userId={userId}
+          disabled={formDisabled}
+          disabledReason={disabledReason}
+          onSubmit={onReserve}
+        />
       </div>
 
       {/* Upcoming reservations */}
@@ -108,7 +113,13 @@ export default function EquipmentDetail({ equipment, reservations, onReserve }: 
                 <span className="text-sm text-slate-300">
                   {formatDate(r.startAt)}
                 </span>
-                <span className="text-slate-500 text-xs">→</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                  r.status === 'pending'
+                    ? 'bg-yellow-500/15 text-yellow-300'
+                    : 'bg-emerald-500/15 text-emerald-300'
+                }`}>
+                  {r.status === 'pending' ? 'Oczekuje' : 'Potwierdzona'}
+                </span>
                 <span className="text-sm text-slate-300">
                   {formatDate(r.endAt)}
                 </span>

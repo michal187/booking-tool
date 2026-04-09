@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readDb, writeDb } from '@/lib/db';
-import type { CreateEquipmentInput, Equipment } from '@/types/schema';
+import { countAvailableUnits } from '@/lib/validation';
+import type { CreateEquipmentInput, Equipment, EquipmentGroup } from '@/types/schema';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const db = readDb();
+  const { searchParams } = new URL(request.url);
+  const grouped = searchParams.get('grouped');
+
+  if (grouped === 'true') {
+    // Group equipment by name and enrich with availability info
+    const nameMap = new Map<string, Equipment[]>();
+    for (const eq of db.equipment) {
+      const list = nameMap.get(eq.name) ?? [];
+      list.push(eq);
+      nameMap.set(eq.name, list);
+    }
+
+    const groups: EquipmentGroup[] = [];
+    for (const [name, items] of nameMap) {
+      const { available, total } = countAvailableUnits(name, db.equipment, db.reservations);
+      groups.push({ name, total, available, items });
+    }
+
+    return NextResponse.json(groups);
+  }
+
   return NextResponse.json(db.equipment);
 }
 

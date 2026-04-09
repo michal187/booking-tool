@@ -2,22 +2,22 @@
 
 import { useState } from 'react';
 import { Search, Circle } from 'lucide-react';
-import type { Equipment } from '@/types/schema';
+import type { EquipmentGroup } from '@/types/schema';
 
 interface EquipmentListProps {
-  equipment: Equipment[];
-  selectedId: string | null;
-  onSelect: (id: string) => void;
+  groups: EquipmentGroup[];
+  selectedName: string | null;
+  onSelect: (name: string) => void;
 }
 
-export default function EquipmentList({ equipment, selectedId, onSelect }: EquipmentListProps) {
+export default function EquipmentList({ groups, selectedName, onSelect }: EquipmentListProps) {
   const [query, setQuery] = useState('');
 
   const filtered = query.trim()
-    ? equipment.filter((e) =>
-        e.name.toLowerCase().includes(query.trim().toLowerCase())
+    ? groups.filter((g) =>
+        g.name.toLowerCase().includes(query.trim().toLowerCase())
       )
-    : equipment;
+    : groups;
 
   return (
     <div className="flex flex-col h-full">
@@ -37,34 +37,34 @@ export default function EquipmentList({ equipment, selectedId, onSelect }: Equip
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {equipment.length === 0 ? (
+        {groups.length === 0 ? (
           <p className="text-slate-400 text-sm text-center py-8">Ładowanie sprzętu...</p>
         ) : filtered.length === 0 ? (
           <p className="text-slate-400 text-sm text-center py-8">Brak wyników dla &quot;{query}&quot;</p>
         ) : (
-          filtered.map((item) => {
-            const isSelected = item.id === selectedId;
-            const isBlocked = item.status === 'blocked';
+          filtered.map((group) => {
+            const isSelected = group.name === selectedName;
+            const hasAvailable = group.available > 0;
 
             return (
               <button
-                key={item.id}
-                onClick={() => onSelect(item.id)}
+                key={group.name}
+                onClick={() => onSelect(group.name)}
                 className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-150 cursor-pointer flex items-center justify-between group ${
                   isSelected
                     ? 'bg-blue-600/20 border border-blue-500/40 text-white'
                     : 'hover:bg-slate-700/50 text-slate-300 border border-transparent'
                 }`}
               >
-                <span className="text-sm font-medium truncate">{item.name}</span>
+                <span className="text-sm font-medium truncate">{group.name}</span>
                 <span className="flex items-center gap-1.5 shrink-0 ml-2">
                   <Circle
                     className={`w-2.5 h-2.5 fill-current ${
-                      isBlocked ? 'text-red-400' : 'text-emerald-400'
+                      hasAvailable ? 'text-emerald-400' : 'text-red-400'
                     }`}
                   />
-                  <span className={`text-xs ${isBlocked ? 'text-red-400' : 'text-emerald-400'}`}>
-                    {isBlocked ? 'Zablok.' : 'Dostępny'}
+                  <span className={`text-xs font-medium ${hasAvailable ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {group.available}/{group.total}
                   </span>
                 </span>
               </button>
